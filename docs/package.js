@@ -18,21 +18,36 @@
     "main.coffee.md": {
       "path": "main.coffee.md",
       "mode": "100644",
-      "content": "Clientside Heroku App Management\n================================\n\nFirst we need an auth token to make requests against the Heroku API.\n\nWe'll want to list all the apps that are running.\n\nCreate and run a new app from a Github hosted git repo at a specific revision.\n\nStop a heroku app.\n\nUpdate an app to a newer git revision.\n",
+      "content": "Clientside Heroku App Management\n================================\n\nFirst we need an auth token to make requests against the Heroku API.\n\nWe'll want to list all the apps that are running.\n\nCreate and run a new app from a Github hosted git repo at a specific revision.\n\nStop a heroku app.\n\nUpdate an app to a newer git revision.\n\nTesting API\n-----------\n\n    herokuKey = btoa(\":\" + localStorage.herokuToken + \"\\n\")\n\n    $.ajax\n      headers:\n        Accept: \"application/vnd.heroku+json; version=3\"\n        Authorization: herokuKey\n      dataType: \"json\"\n      url: \"https://api.heroku.com/account\"\n      success: (data) ->\n        console.log data\n      error: ({responseText}) ->\n        console.error JSON.parse responseText\n",
+      "type": "blob"
+    },
+    "pixie.cson": {
+      "path": "pixie.cson",
+      "mode": "100644",
+      "content": "version: \"0.1.0\"\nremoteDependencies: [\n  \"https://code.jquery.com/jquery-1.10.1.min.js\"\n]\n",
       "type": "blob"
     }
   },
   "distribution": {
     "main": {
       "path": "main",
-      "content": "(function() {\n\n\n}).call(this);\n\n//# sourceURL=main.coffee",
+      "content": "(function() {\n  var herokuKey;\n\n  herokuKey = btoa(\":\" + localStorage.herokuToken + \"\\n\");\n\n  $.ajax({\n    headers: {\n      Accept: \"application/vnd.heroku+json; version=3\",\n      Authorization: herokuKey\n    },\n    dataType: \"json\",\n    url: \"https://api.heroku.com/account\",\n    success: function(data) {\n      return console.log(data);\n    },\n    error: function(_arg) {\n      var responseText;\n      responseText = _arg.responseText;\n      return console.error(JSON.parse(responseText));\n    }\n  });\n\n}).call(this);\n\n//# sourceURL=main.coffee",
+      "type": "blob"
+    },
+    "pixie": {
+      "path": "pixie",
+      "content": "module.exports = {\"version\":\"0.1.0\",\"remoteDependencies\":[\"https://code.jquery.com/jquery-1.10.1.min.js\"]};",
       "type": "blob"
     }
   },
   "progenitor": {
     "url": "http://strd6.github.io/editor/"
   },
+  "version": "0.1.0",
   "entryPoint": "main",
+  "remoteDependencies": [
+    "https://code.jquery.com/jquery-1.10.1.min.js"
+  ],
   "repository": {
     "id": 15913462,
     "name": "heroku",
@@ -97,8 +112,8 @@
     "labels_url": "https://api.github.com/repos/distri/heroku/labels{/name}",
     "releases_url": "https://api.github.com/repos/distri/heroku/releases{/id}",
     "created_at": "2014-01-14T19:53:17Z",
-    "updated_at": "2014-01-14T19:53:18Z",
-    "pushed_at": "2014-01-14T19:53:18Z",
+    "updated_at": "2014-01-14T19:55:48Z",
+    "pushed_at": "2014-01-14T19:55:48Z",
     "git_url": "git://github.com/distri/heroku.git",
     "ssh_url": "git@github.com:distri/heroku.git",
     "clone_url": "https://github.com/distri/heroku.git",
