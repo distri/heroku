@@ -54,17 +54,46 @@
               
             </div>
             <div class="content"><pre><code class="lang-coffeescript">herokuKey = btoa(<span class="string">":"</span> + localStorage.herokuToken + <span class="string">"\n"</span>)
+url = <span class="string">"account"</span>
 
-$.ajax
-  headers:
-    Accept: <span class="string">"application/vnd.heroku+json; version=3"</span>
-    Authorization: herokuKey
-  dataType: <span class="string">"json"</span>
-  url: <span class="string">"https://api.heroku.com/account"</span>
-  success: (data) -&gt;
-    console.log data
-  error: ({responseText}) -&gt;
-    console.error JSON.parse responseText</code></pre>
+ApiGenerator = require <span class="string">"./api_generator"</span>
+{extend} = require <span class="string">"./utils"</span>
+
+root = <span class="string">"https://api.heroku.com/"</span></code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>If our request is absolute we use that url, otherwise we get the base url from
+our root and append the path. This allows us to follow HATEOS resource urls more
+easily.</p>
+
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript">{api} = ApiGenerator (options) -&gt;
+  options = extend
+    dataType: <span class="string">"json"</span>
+    headers:
+      Accept: <span class="string">"application/vnd.heroku+json; version=3"</span>
+      Authorization: herokuKey
+    type: <span class="string">"GET"</span>
+  , options
+
+  path = options.url
+  <span class="keyword">unless</span> path.match <span class="regexp">/^http/</span>
+    options.url = <span class="string">"<span class="subst">#{root}</span>/<span class="subst">#{path}</span>"</span>
+
+  $.ajax(options)
+
+api(<span class="string">"user"</span>)
+.<span class="keyword">then</span> (data) -&gt;
+  console.log data
+, ({responseText}) -&gt;
+  console.error JSON.parse responseText</code></pre>
 </div>
         </li>
         

@@ -18,7 +18,7 @@
     "main.coffee.md": {
       "path": "main.coffee.md",
       "mode": "100644",
-      "content": "Clientside Heroku App Management\n================================\n\nFirst we need an auth token to make requests against the Heroku API.\n\nWe'll want to list all the apps that are running.\n\nCreate and run a new app from a Github hosted git repo at a specific revision.\n\nStop a heroku app.\n\nUpdate an app to a newer git revision.\n\nTesting API\n-----------\n\n    herokuKey = btoa(\":\" + localStorage.herokuToken + \"\\n\")\n\n    $.ajax\n      headers:\n        Accept: \"application/vnd.heroku+json; version=3\"\n        Authorization: herokuKey\n      dataType: \"json\"\n      url: \"https://api.heroku.com/account\"\n      success: (data) ->\n        console.log data\n      error: ({responseText}) ->\n        console.error JSON.parse responseText\n",
+      "content": "Clientside Heroku App Management\n================================\n\nFirst we need an auth token to make requests against the Heroku API.\n\nWe'll want to list all the apps that are running.\n\nCreate and run a new app from a Github hosted git repo at a specific revision.\n\nStop a heroku app.\n\nUpdate an app to a newer git revision.\n\nTesting API\n-----------\n\n    herokuKey = btoa(\":\" + localStorage.herokuToken + \"\\n\")\n    url = \"account\"\n\n    ApiGenerator = require \"./api_generator\"\n    {extend} = require \"./utils\"\n\n    root = \"https://api.heroku.com/\"\n\nIf our request is absolute we use that url, otherwise we get the base url from\nour root and append the path. This allows us to follow HATEOS resource urls more\neasily.\n\n    {api} = ApiGenerator (options) ->\n      options = extend\n        dataType: \"json\"\n        headers:\n          Accept: \"application/vnd.heroku+json; version=3\"\n          Authorization: herokuKey\n        type: \"GET\"\n      , options\n\n      path = options.url\n      unless path.match /^http/\n        options.url = \"#{root}/#{path}\"\n\n      $.ajax(options)\n\n    api(\"user\")\n    .then (data) ->\n      console.log data\n    , ({responseText}) ->\n      console.error JSON.parse responseText\n",
       "type": "blob"
     },
     "pixie.cson": {
@@ -26,17 +26,39 @@
       "mode": "100644",
       "content": "version: \"0.1.0\"\nremoteDependencies: [\n  \"https://code.jquery.com/jquery-1.10.1.min.js\"\n]\n",
       "type": "blob"
+    },
+    "api_generator.coffee.md": {
+      "path": "api_generator.coffee.md",
+      "mode": "100644",
+      "content": "API Generator\n=============\n\nGenerate all those fun API verbs: `get`, `put`, `post`, `patch`, `delete`\n\nThe `requester` does the actual api calls, these just set it up easily.\n\n`requester` is a function that takes an `options` object.\n\n    ApiGenerator = (requester) ->\n\nConfigure the options for a request by stringifying any data to be added to the\nrequest body, and setting the appropriate type. `get` requests don't call this\nas the default type is `get` and they put their params in the querystring.\n\n      requestOptions = (type, data) ->\n        type: type\n        data: JSON.stringify(data)\n\n      api = (path, options={}) ->\n        options.url = path\n\n        requester options\n\nExpose the basic api method in our returned object.\n\n      api: api\n\n      get: (path, data) ->\n        api path, data: data\n\n      put: (path, data) ->\n        api(path, requestOptions(\"PUT\", data))\n\n      post: (path, data) ->\n        api(path, requestOptions(\"POST\", data))\n\n      patch: (path, data) ->\n        api path, requestOptions(\"PATCH\", data)\n\n`delete` is a keyword in JS, so I guess we'll go with all caps. We maybe should\ngo with all caps for everything, but it seems so loud.\n\n      DELETE: (path, data) ->\n        api path, requestOptions(\"DELETE\", data)\n\n    module.exports = ApiGenerator\n",
+      "type": "blob"
+    },
+    "utils.coffee.md": {
+      "path": "utils.coffee.md",
+      "mode": "100644",
+      "content": "Utils\n=====\n\nExtend an object with additional properties.\n\n    module.exports =\n      extend: (target, sources...) ->\n        for source in sources\n          for name of source\n            target[name] = source[name]\n\n        return target\n",
+      "type": "blob"
     }
   },
   "distribution": {
     "main": {
       "path": "main",
-      "content": "(function() {\n  var herokuKey;\n\n  herokuKey = btoa(\":\" + localStorage.herokuToken + \"\\n\");\n\n  $.ajax({\n    headers: {\n      Accept: \"application/vnd.heroku+json; version=3\",\n      Authorization: herokuKey\n    },\n    dataType: \"json\",\n    url: \"https://api.heroku.com/account\",\n    success: function(data) {\n      return console.log(data);\n    },\n    error: function(_arg) {\n      var responseText;\n      responseText = _arg.responseText;\n      return console.error(JSON.parse(responseText));\n    }\n  });\n\n}).call(this);\n\n//# sourceURL=main.coffee",
+      "content": "(function() {\n  var ApiGenerator, api, extend, herokuKey, root, url;\n\n  herokuKey = btoa(\":\" + localStorage.herokuToken + \"\\n\");\n\n  url = \"account\";\n\n  ApiGenerator = require(\"./api_generator\");\n\n  extend = require(\"./utils\").extend;\n\n  root = \"https://api.heroku.com/\";\n\n  api = ApiGenerator(function(options) {\n    var path;\n    options = extend({\n      dataType: \"json\",\n      headers: {\n        Accept: \"application/vnd.heroku+json; version=3\",\n        Authorization: herokuKey\n      },\n      type: \"GET\"\n    }, options);\n    path = options.url;\n    if (!path.match(/^http/)) {\n      options.url = \"\" + root + \"/\" + path;\n    }\n    return $.ajax(options);\n  }).api;\n\n  api(\"user\").then(function(data) {\n    return console.log(data);\n  }, function(_arg) {\n    var responseText;\n    responseText = _arg.responseText;\n    return console.error(JSON.parse(responseText));\n  });\n\n}).call(this);\n\n//# sourceURL=main.coffee",
       "type": "blob"
     },
     "pixie": {
       "path": "pixie",
       "content": "module.exports = {\"version\":\"0.1.0\",\"remoteDependencies\":[\"https://code.jquery.com/jquery-1.10.1.min.js\"]};",
+      "type": "blob"
+    },
+    "api_generator": {
+      "path": "api_generator",
+      "content": "(function() {\n  var ApiGenerator;\n\n  ApiGenerator = function(requester) {\n    var api, requestOptions;\n    requestOptions = function(type, data) {\n      return {\n        type: type,\n        data: JSON.stringify(data)\n      };\n    };\n    api = function(path, options) {\n      if (options == null) {\n        options = {};\n      }\n      options.url = path;\n      return requester(options);\n    };\n    return {\n      api: api,\n      get: function(path, data) {\n        return api(path, {\n          data: data\n        });\n      },\n      put: function(path, data) {\n        return api(path, requestOptions(\"PUT\", data));\n      },\n      post: function(path, data) {\n        return api(path, requestOptions(\"POST\", data));\n      },\n      patch: function(path, data) {\n        return api(path, requestOptions(\"PATCH\", data));\n      },\n      DELETE: function(path, data) {\n        return api(path, requestOptions(\"DELETE\", data));\n      }\n    };\n  };\n\n  module.exports = ApiGenerator;\n\n}).call(this);\n\n//# sourceURL=api_generator.coffee",
+      "type": "blob"
+    },
+    "utils": {
+      "path": "utils",
+      "content": "(function() {\n  var __slice = [].slice;\n\n  module.exports = {\n    extend: function() {\n      var name, source, sources, target, _i, _len;\n      target = arguments[0], sources = 2 <= arguments.length ? __slice.call(arguments, 1) : [];\n      for (_i = 0, _len = sources.length; _i < _len; _i++) {\n        source = sources[_i];\n        for (name in source) {\n          target[name] = source[name];\n        }\n      }\n      return target;\n    }\n  };\n\n}).call(this);\n\n//# sourceURL=utils.coffee",
       "type": "blob"
     }
   },
