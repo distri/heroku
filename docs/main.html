@@ -32,6 +32,18 @@
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
+              
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript">require <span class="string">"./setup"</span></code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
               <p>First we need an auth token to make requests against the Heroku API.</p>
 <p>We&#39;ll want to list all the apps that are running.</p>
 <p>Create and run a new app from a Github hosted git repo at a specific revision.</p>
@@ -46,10 +58,10 @@
         </li>
         
         
-        <li id="section-3">
+        <li id="section-4">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-3">&#182;</a>
+                <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
               
             </div>
@@ -59,22 +71,24 @@ url = <span class="string">"account"</span>
 ApiGenerator = require <span class="string">"./api_generator"</span>
 {extend} = require <span class="string">"./utils"</span>
 
-root = <span class="string">"https://api.heroku.com/"</span></code></pre>
+root = <span class="string">"https://api.heroku.com/"</span>
+
+template = require <span class="string">"./templates/apps"</span></code></pre>
 </div>
         </li>
         
         
-        <li id="section-4">
+        <li id="section-5">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-4">&#182;</a>
+                <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <p>If our request is absolute we use that url, otherwise we get the base url from
 our root and append the path. This allows us to follow HATEOS resource urls more
 easily.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">{api} = ApiGenerator (options) -&gt;
+            <div class="content"><pre><code class="lang-coffeescript">{get, api} = ApiGenerator (options) -&gt;
   options = extend
     dataType: <span class="string">"json"</span>
     headers:
@@ -89,9 +103,12 @@ easily.</p>
 
   $.ajax(options)
 
-api(<span class="string">"user"</span>)
+get(<span class="string">"apps"</span>)
 .<span class="keyword">then</span> (data) -&gt;
   console.log data
+
+  $(<span class="string">"body"</span>).append template(apps: data)
+
 , ({responseText}) -&gt;
   console.error JSON.parse responseText</code></pre>
 </div>
@@ -102,7 +119,9 @@ api(<span class="string">"user"</span>)
   <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.3/coffee-script.min.js"></script>
 <script src="http://strd6.github.io/require/v0.2.2.js"></script>
-<script src="https://code.jquery.com/jquery-1.10.1.min.js"></script><script>
+<script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.3/coffee-script.min.js"></script>
+<script src="http://strd6.github.io/tempest/javascripts/envweb-v0.4.7.js"></script><script>
   $.ajax({
     url: "http://strd6.github.io/interactive/v0.8.1.jsonp",
     dataType: "jsonp",

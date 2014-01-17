@@ -15,13 +15,13 @@ window["distri/heroku:master"]({
     "main.coffee.md": {
       "path": "main.coffee.md",
       "mode": "100644",
-      "content": "Clientside Heroku App Management\n================================\n\nFirst we need an auth token to make requests against the Heroku API.\n\nWe'll want to list all the apps that are running.\n\nCreate and run a new app from a Github hosted git repo at a specific revision.\n\nStop a heroku app.\n\nUpdate an app to a newer git revision.\n\nTesting API\n-----------\n\n    herokuKey = btoa(\":\" + localStorage.herokuToken + \"\\n\")\n    url = \"account\"\n\n    ApiGenerator = require \"./api_generator\"\n    {extend} = require \"./utils\"\n\n    root = \"https://api.heroku.com/\"\n\nIf our request is absolute we use that url, otherwise we get the base url from\nour root and append the path. This allows us to follow HATEOS resource urls more\neasily.\n\n    {api} = ApiGenerator (options) ->\n      options = extend\n        dataType: \"json\"\n        headers:\n          Accept: \"application/vnd.heroku+json; version=3\"\n          Authorization: herokuKey\n        type: \"GET\"\n      , options\n\n      path = options.url\n      unless path.match /^http/\n        options.url = \"#{root}/#{path}\"\n\n      $.ajax(options)\n\n    api(\"user\")\n    .then (data) ->\n      console.log data\n    , ({responseText}) ->\n      console.error JSON.parse responseText\n",
+      "content": "Clientside Heroku App Management\n================================\n\n    require \"./setup\"\n\nFirst we need an auth token to make requests against the Heroku API.\n\nWe'll want to list all the apps that are running.\n\nCreate and run a new app from a Github hosted git repo at a specific revision.\n\nStop a heroku app.\n\nUpdate an app to a newer git revision.\n\nTesting API\n-----------\n\n    herokuKey = btoa(\":\" + localStorage.herokuToken + \"\\n\")\n    url = \"account\"\n\n    ApiGenerator = require \"./api_generator\"\n    {extend} = require \"./utils\"\n\n    root = \"https://api.heroku.com/\"\n\n    template = require \"./templates/apps\"\n\nIf our request is absolute we use that url, otherwise we get the base url from\nour root and append the path. This allows us to follow HATEOS resource urls more\neasily.\n\n    {get, api} = ApiGenerator (options) ->\n      options = extend\n        dataType: \"json\"\n        headers:\n          Accept: \"application/vnd.heroku+json; version=3\"\n          Authorization: herokuKey\n        type: \"GET\"\n      , options\n\n      path = options.url\n      unless path.match /^http/\n        options.url = \"#{root}/#{path}\"\n\n      $.ajax(options)\n\n    get(\"apps\")\n    .then (data) ->\n      console.log data\n\n      $(\"body\").append template(apps: data)\n\n    , ({responseText}) ->\n      console.error JSON.parse responseText\n",
       "type": "blob"
     },
     "pixie.cson": {
       "path": "pixie.cson",
       "mode": "100644",
-      "content": "version: \"0.1.0\"\nremoteDependencies: [\n  \"https://code.jquery.com/jquery-1.10.1.min.js\"\n]\n",
+      "content": "version: \"0.1.0\"\nremoteDependencies: [\n  \"https://code.jquery.com/jquery-1.10.1.min.js\"\n  \"https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.3/coffee-script.min.js\"\n  \"http://strd6.github.io/tempest/javascripts/envweb-v0.4.7.js\"\n]\n",
       "type": "blob"
     },
     "api_generator.coffee.md": {
@@ -35,17 +35,35 @@ window["distri/heroku:master"]({
       "mode": "100644",
       "content": "Utils\n=====\n\nExtend an object with additional properties.\n\n    module.exports =\n      extend: (target, sources...) ->\n        for source in sources\n          for name of source\n            target[name] = source[name]\n\n        return target\n",
       "type": "blob"
+    },
+    "templates/app.haml": {
+      "path": "templates/app.haml",
+      "mode": "100644",
+      "content": ".app\n  = @name\n  .url= @web_url\n",
+      "type": "blob"
+    },
+    "templates/apps.haml": {
+      "path": "templates/apps.haml",
+      "mode": "100644",
+      "content": "%ul.apps\n  - each @apps, (app) ->\n    %li.app\n      = app.name\n",
+      "type": "blob"
+    },
+    "setup.coffee.md": {
+      "path": "setup.coffee.md",
+      "mode": "100644",
+      "content": "Setup\n=====\n\nExpose global require for templates and debugging.\n\n    global.require = require\n\nExpose global package for debugging.\n\n    global.PACKAGE = PACKAGE\n",
+      "type": "blob"
     }
   },
   "distribution": {
     "main": {
       "path": "main",
-      "content": "(function() {\n  var ApiGenerator, api, extend, herokuKey, root, url;\n\n  herokuKey = btoa(\":\" + localStorage.herokuToken + \"\\n\");\n\n  url = \"account\";\n\n  ApiGenerator = require(\"./api_generator\");\n\n  extend = require(\"./utils\").extend;\n\n  root = \"https://api.heroku.com/\";\n\n  api = ApiGenerator(function(options) {\n    var path;\n    options = extend({\n      dataType: \"json\",\n      headers: {\n        Accept: \"application/vnd.heroku+json; version=3\",\n        Authorization: herokuKey\n      },\n      type: \"GET\"\n    }, options);\n    path = options.url;\n    if (!path.match(/^http/)) {\n      options.url = \"\" + root + \"/\" + path;\n    }\n    return $.ajax(options);\n  }).api;\n\n  api(\"user\").then(function(data) {\n    return console.log(data);\n  }, function(_arg) {\n    var responseText;\n    responseText = _arg.responseText;\n    return console.error(JSON.parse(responseText));\n  });\n\n}).call(this);\n\n//# sourceURL=main.coffee",
+      "content": "(function() {\n  var ApiGenerator, api, extend, get, herokuKey, root, template, url, _ref;\n\n  require(\"./setup\");\n\n  herokuKey = btoa(\":\" + localStorage.herokuToken + \"\\n\");\n\n  url = \"account\";\n\n  ApiGenerator = require(\"./api_generator\");\n\n  extend = require(\"./utils\").extend;\n\n  root = \"https://api.heroku.com/\";\n\n  template = require(\"./templates/apps\");\n\n  _ref = ApiGenerator(function(options) {\n    var path;\n    options = extend({\n      dataType: \"json\",\n      headers: {\n        Accept: \"application/vnd.heroku+json; version=3\",\n        Authorization: herokuKey\n      },\n      type: \"GET\"\n    }, options);\n    path = options.url;\n    if (!path.match(/^http/)) {\n      options.url = \"\" + root + \"/\" + path;\n    }\n    return $.ajax(options);\n  }), get = _ref.get, api = _ref.api;\n\n  get(\"apps\").then(function(data) {\n    console.log(data);\n    return $(\"body\").append(template({\n      apps: data\n    }));\n  }, function(_arg) {\n    var responseText;\n    responseText = _arg.responseText;\n    return console.error(JSON.parse(responseText));\n  });\n\n}).call(this);\n\n//# sourceURL=main.coffee",
       "type": "blob"
     },
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.1.0\",\"remoteDependencies\":[\"https://code.jquery.com/jquery-1.10.1.min.js\"]};",
+      "content": "module.exports = {\"version\":\"0.1.0\",\"remoteDependencies\":[\"https://code.jquery.com/jquery-1.10.1.min.js\",\"https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.3/coffee-script.min.js\",\"http://strd6.github.io/tempest/javascripts/envweb-v0.4.7.js\"]};",
       "type": "blob"
     },
     "api_generator": {
@@ -57,6 +75,21 @@ window["distri/heroku:master"]({
       "path": "utils",
       "content": "(function() {\n  var __slice = [].slice;\n\n  module.exports = {\n    extend: function() {\n      var name, source, sources, target, _i, _len;\n      target = arguments[0], sources = 2 <= arguments.length ? __slice.call(arguments, 1) : [];\n      for (_i = 0, _len = sources.length; _i < _len; _i++) {\n        source = sources[_i];\n        for (name in source) {\n          target[name] = source[name];\n        }\n      }\n      return target;\n    }\n  };\n\n}).call(this);\n\n//# sourceURL=utils.coffee",
       "type": "blob"
+    },
+    "templates/app": {
+      "path": "templates/app",
+      "content": "module.exports = Function(\"return \" + HAMLjr.compile(\".app\\n  = @name\\n  .url= @web_url\\n\", {compiler: CoffeeScript}))()",
+      "type": "blob"
+    },
+    "templates/apps": {
+      "path": "templates/apps",
+      "content": "module.exports = Function(\"return \" + HAMLjr.compile(\"%ul.apps\\n  - each @apps, (app) ->\\n    %li.app\\n      = app.name\\n\", {compiler: CoffeeScript}))()",
+      "type": "blob"
+    },
+    "setup": {
+      "path": "setup",
+      "content": "(function() {\n  global.require = require;\n\n  global.PACKAGE = PACKAGE;\n\n}).call(this);\n\n//# sourceURL=setup.coffee",
+      "type": "blob"
     }
   },
   "progenitor": {
@@ -65,7 +98,9 @@ window["distri/heroku:master"]({
   "version": "0.1.0",
   "entryPoint": "main",
   "remoteDependencies": [
-    "https://code.jquery.com/jquery-1.10.1.min.js"
+    "https://code.jquery.com/jquery-1.10.1.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.3/coffee-script.min.js",
+    "http://strd6.github.io/tempest/javascripts/envweb-v0.4.7.js"
   ],
   "repository": {
     "id": 15913462,
