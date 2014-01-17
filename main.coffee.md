@@ -1,6 +1,8 @@
 Clientside Heroku App Management
 ================================
 
+    require "./setup"
+
 First we need an auth token to make requests against the Heroku API.
 
 We'll want to list all the apps that are running.
@@ -22,11 +24,13 @@ Testing API
 
     root = "https://api.heroku.com/"
 
+    template = require "./templates/apps"
+
 If our request is absolute we use that url, otherwise we get the base url from
 our root and append the path. This allows us to follow HATEOS resource urls more
 easily.
 
-    {api} = ApiGenerator (options) ->
+    {get, api} = ApiGenerator (options) ->
       options = extend
         dataType: "json"
         headers:
@@ -41,8 +45,11 @@ easily.
 
       $.ajax(options)
 
-    api("user")
+    get("apps")
     .then (data) ->
       console.log data
+
+      $("body").append template(apps: data)
+
     , ({responseText}) ->
       console.error JSON.parse responseText
