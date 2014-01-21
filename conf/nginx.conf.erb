@@ -8,7 +8,7 @@ events {
 }
 
 http {
-  include mime.types;
+  # include mime.types;
   server {
     # HACK: Fixes Facebook's canvas pages by turning POST error to GET for same uri.
     error_page 405 =200 $uri;
