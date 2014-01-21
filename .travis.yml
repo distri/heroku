@@ -4,3 +4,5 @@ deploy:
     secure: RTMdJJWWTwgDdcmXxys5d3Gix7LMvA2hIRJM1jaELARvEDnJpQxo9OcNy/4AT0uKjLKmPHj8QXdy1G0NnszvZKknSS0NQkqV42ajb4r3fuEeDeEEkS7S0ZA/pQz8w7X56Qv1zjFB8o72hSvFded9H9trTHkCBeEyL8D5JXOu+lc=
   app:
     distri-heroku: gh-pages
+branches:
+  only: gh-pages
