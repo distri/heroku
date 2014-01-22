@@ -1,7 +1,7 @@
 deploy:
   provider: heroku
   api_key:
-    secure: DyrZVwCQd3ewCnIfj6KtJGb3welpzXxNw3UKQDzpOOhwzXcbuXvHD22F1DbJrhUBKmgIaOGvFXcv2P6Q6dJt+PCvM5Er2EFlGKHsSReVRgKAVpcG5xOjIEYwZK93d6GFYdxv7ucWllwQQwpa4WosCvCC2cWtaBzSAIlsRjo6rwk=
+    - secure: Z3sin4cGVFacWx0GsxOSLzizq7EoKVMrKkZpA3whKKF+M+4K+lVGPJhkaXt4ljv8Bilt6dRbrOdL6wV1Q9bj5V61PHHi4jZA+dwQMW+fqf4ToM4BUjCOpe68GEqNW+UbUCm2ZFL/eKxDL0jeZxcQd4TK8PHehNr12FCduN/hgi8=
   app:
     distri-heroku: gh-pages
   on: gh-pages
