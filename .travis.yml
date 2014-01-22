@@ -2,8 +2,7 @@ deploy:
   provider: heroku
   api_key:
     - secure: Z3sin4cGVFacWx0GsxOSLzizq7EoKVMrKkZpA3whKKF+M+4K+lVGPJhkaXt4ljv8Bilt6dRbrOdL6wV1Q9bj5V61PHHi4jZA+dwQMW+fqf4ToM4BUjCOpe68GEqNW+UbUCm2ZFL/eKxDL0jeZxcQd4TK8PHehNr12FCduN/hgi8=
-  app:
-    distri-heroku: gh-pages
+  app: distri-heroku
   on: gh-pages
 branches:
   only: gh-pages
